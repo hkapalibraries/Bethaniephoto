@@ -1,0 +1,7 @@
+{
+  "name": "HKAPA Virtual Photo Booth",
+  "description": "AI-Powered Virtual Photo Booth for HKAPA Film & TV Library using Gemini Vision models.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
