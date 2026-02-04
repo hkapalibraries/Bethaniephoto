@@ -73,6 +73,14 @@ const App: React.FC = () => {
     setState(AppState.IDLE);
   };
 
+  // New function to go back to settings without clearing captured image
+  const handleBackToConfigure = () => {
+    setProcessedImage(null);
+    setPublicUrl(null);
+    setErrorMsg(null);
+    setState(AppState.CONFIGURE);
+  };
+
   const handleProcess = async () => {
     if (!capturedImage) return;
     setState(AppState.PROCESSING);
@@ -311,20 +319,28 @@ const App: React.FC = () => {
            )}
 
            {isResult && (
-             <div className="flex gap-3">
+             <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                   <button
+                      onClick={handleBackToConfigure}
+                      className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-yellow-500 border border-slate-700 hover:border-yellow-500 font-bold rounded transition-all"
+                   >
+                      Adjust / Regenerate
+                   </button>
+                   <button
+                      id="share-btn"
+                      onClick={handleShare}
+                      disabled={!!publicUrl}
+                      className={`flex-[1.5] py-3 font-bold rounded text-white shadow-lg ${publicUrl ? 'bg-green-600 cursor-default' : 'bg-blue-600 hover:bg-blue-500'}`}
+                   >
+                      {publicUrl ? 'Saved' : 'Get QR Code'}
+                   </button>
+                </div>
                 <button
                   onClick={handleRetake}
-                  className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded"
+                  className="w-full py-2 text-slate-500 hover:text-slate-300 text-[10px] uppercase tracking-widest"
                >
-                  New Photo
-               </button>
-               <button
-                  id="share-btn"
-                  onClick={handleShare}
-                  disabled={!!publicUrl}
-                  className={`flex-[2] py-3 font-bold rounded text-white shadow-lg ${publicUrl ? 'bg-green-600 cursor-default' : 'bg-blue-600 hover:bg-blue-500'}`}
-               >
-                  {publicUrl ? 'Ready' : 'Generate QR Code'}
+                  Discard & Take New Photo
                </button>
              </div>
            )}
