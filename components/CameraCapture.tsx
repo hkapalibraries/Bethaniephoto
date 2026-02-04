@@ -69,15 +69,21 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
 
     const startCamera = async () => {
       try {
+        // Request high resolution front camera
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: 'user' },
+          video: { 
+            facingMode: 'user', 
+            width: { ideal: 4096 }, 
+            height: { ideal: 2160 } 
+          },
           audio: false
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        setError("Camera access denied.");
+        console.error("Camera Error:", err);
+        setError("Camera access denied or not available.");
       }
     };
 

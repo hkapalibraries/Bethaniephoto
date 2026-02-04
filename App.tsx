@@ -130,7 +130,7 @@ const App: React.FC = () => {
   const isResult = state === AppState.RESULT;
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
+    <div className="flex flex-col-reverse md:flex-row h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
       
       {/* Hidden File Input */}
       <input 
@@ -142,32 +142,31 @@ const App: React.FC = () => {
       />
 
       {/* --- Sidebar (Controls) --- */}
-      <div className="w-full md:w-96 flex flex-col border-r border-slate-800 bg-slate-900 z-20 shadow-2xl overflow-y-auto">
+      {/* Mobile: Bottom Sheet (45vh height). Desktop: Left Sidebar (Full height, 96px width) */}
+      <div className="w-full md:w-96 flex flex-col border-t md:border-t-0 md:border-r border-slate-800 bg-slate-900 z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.5)] md:shadow-2xl h-[45vh] md:h-full rounded-t-3xl md:rounded-none">
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-800">
-          <h1 className="font-display text-2xl text-white tracking-wide">
-            HKAPA <span className="text-yellow-500">Time Machine</span>
+        <div className="px-6 pt-4 pb-2 md:p-6 md:border-b border-slate-800 shrink-0">
+          <h1 className="font-display text-lg md:text-2xl text-white tracking-wide">
+            AI brings you into <span className="text-yellow-500">HKAPA F/TV Library</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">Virtual Photo Booth • 9:16 Wallpaper Edition</p>
+          <p className="hidden md:block text-xs text-slate-500 mt-1">Virtual Photo Booth • 9:16 Wallpaper Edition</p>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 p-6 space-y-8">
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 px-6 py-2 md:p-6 space-y-6 md:space-y-8 overflow-y-auto">
           
           {/* API Key */}
           <section>
              <ApiKeyInput value={config.imgBbApiKey} onChange={(val) => setConfig({...config, imgBbApiKey: val})} />
           </section>
 
-          {/* Settings - Only show if not yet in result mode to reduce clutter, or keep all enabled? 
-              Let's disable inputs if processing/result for clarity 
-          */}
-          <div className={`space-y-8 transition-opacity ${isResult || isProcessing ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+          {/* Settings Group */}
+          <div className={`space-y-6 md:space-y-8 transition-opacity ${isResult || isProcessing ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
             
             {/* Scene */}
             <section>
-              <h3 className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-3">1. Background</h3>
+              <h3 className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 md:mb-3">1. Background</h3>
               <div className="grid grid-cols-2 gap-3">
                 {Object.values(SCENES).map((scene, idx) => {
                   const sId = Object.keys(SCENES)[idx] as SceneId;
@@ -191,7 +190,7 @@ const App: React.FC = () => {
 
             {/* Subject Mode */}
             <section>
-              <h3 className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-3">2. Subject</h3>
+              <h3 className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 md:mb-3">2. Subject</h3>
               <div className="grid grid-cols-1 gap-2">
                 {Object.values(SubjectMode).map(mode => (
                   <button
@@ -206,7 +205,7 @@ const App: React.FC = () => {
             </section>
 
             {/* Pose & Model (Compact) */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 pb-4">
                <section>
                   <h3 className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2">3. Pose</h3>
                   <select 
@@ -225,16 +224,16 @@ const App: React.FC = () => {
                      onClick={() => setConfig({...config, model: config.model === GeminiModel.FLASH ? GeminiModel.PRO : GeminiModel.FLASH})}
                      className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs flex items-center justify-between hover:bg-slate-700"
                   >
-                     <span>{config.model === GeminiModel.FLASH ? 'Flash (Fast)' : 'Pro (Best)'}</span>
+                     <span>{config.model === GeminiModel.FLASH ? 'Flash' : 'Pro'}</span>
                      <div className={`w-2 h-2 rounded-full ${config.model === GeminiModel.FLASH ? 'bg-green-500' : 'bg-purple-500'}`}></div>
                   </button>
                </section>
             </div>
           </div>
 
-          {/* Result Controls (Edit & QR) - Only visible in Result state */}
+          {/* Result Controls */}
           {isResult && (
-            <div className="pt-4 border-t border-slate-800 animate-fade-in">
+            <div className="pt-4 border-t border-slate-800 animate-fade-in pb-20">
               <h3 className="text-purple-400 text-xs font-bold uppercase tracking-wider mb-3">AI Editor</h3>
               <div className="flex gap-2 mb-4">
                  <input 
@@ -265,7 +264,7 @@ const App: React.FC = () => {
                         <p className="text-slate-900 text-[10px] font-bold mt-2">Scan for Wallpaper</p>
                       </>
                   ) : (
-                      <p className="text-slate-400 text-xs text-center">Click 'Generate QR Code' below to create a download link.</p>
+                      <p className="text-slate-400 text-xs text-center">Click 'Generate QR Code' below.</p>
                   )}
                </div>
             </div>
@@ -273,13 +272,13 @@ const App: React.FC = () => {
 
         </div>
 
-        {/* Action Bar (Sticky Bottom) */}
-        <div className="p-4 bg-slate-900 border-t border-slate-800 space-y-3">
+        {/* Action Bar (Sticky Bottom of Sidebar) */}
+        <div className="p-4 bg-slate-900 border-t border-slate-800 space-y-3 shrink-0">
            {isLive && (
              <div className="flex flex-col gap-2">
                  <button
                     onClick={handleCapture}
-                    className="w-full py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold text-lg uppercase tracking-widest rounded shadow-lg shadow-yellow-900/20 active:scale-95 transition-all"
+                    className="w-full py-3 md:py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold text-base md:text-lg uppercase tracking-widest rounded shadow-lg shadow-yellow-900/20 active:scale-95 transition-all"
                  >
                     Capture Photo
                  </button>
@@ -337,11 +336,12 @@ const App: React.FC = () => {
       </div>
 
       {/* --- Main Viewport (Preview) --- */}
-      <div className="flex-1 bg-black relative flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 to-black">
+      {/* Mobile: Top area (55vh). Desktop: Right area (Flex-1) */}
+      <div className="h-[55vh] md:h-auto md:flex-1 bg-black relative flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 to-black shrink-0">
          
-         {/* Phone Container (9:16) */}
+         {/* Phone Container (9:16) - Scale to fit height */}
          <div 
-            className="relative w-full max-w-[45vh] md:max-w-[50vh] aspect-[9/16] bg-black rounded-2xl shadow-2xl border-4 border-slate-800 overflow-hidden ring-1 ring-white/10"
+            className="relative h-[95%] md:h-[85%] w-auto aspect-[9/16] bg-black rounded-2xl shadow-2xl border-4 border-slate-800 overflow-hidden ring-1 ring-white/10"
          >
             {/* 1. Camera Feed */}
             {isLive && (
