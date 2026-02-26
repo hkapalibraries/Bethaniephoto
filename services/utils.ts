@@ -85,10 +85,10 @@ export const addWatermark = async (base64Image: string): Promise<string> => {
 
       // Text
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = `bold ${h * 0.03}px 'Cinzel', serif`;
+      ctx.font = `bold ${h * 0.022}px 'Cinzel', serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('HKAPA Film & TV Library 2026', w / 2, h - (barHeight / 2));
+      ctx.fillText('Open Day 2026 | HKAPA Film & TV Library', w / 2, h - (barHeight / 2));
 
       // Return new base64
       resolve(canvas.toDataURL('image/jpeg', 0.95));
