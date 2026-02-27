@@ -66,30 +66,49 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
 
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let isMounted = true;
 
     const startCamera = async () => {
       try {
-        // Request high resolution front camera
+        // Attempt 1: High Resolution Front Camera
+        // We use min constraints to encourage higher quality, but fallback if needed
         stream = await navigator.mediaDevices.getUserMedia({
           video: { 
             facingMode: 'user', 
-            width: { ideal: 4096 }, 
-            height: { ideal: 2160 } 
+            width: { min: 1280, ideal: 3840 }, 
+            height: { min: 720, ideal: 2160 } 
           },
           audio: false
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
       } catch (err) {
-        console.error("Camera Error:", err);
-        setError("Camera access denied or not available.");
+        console.warn("High-res camera failed, retrying with default constraints...", err);
+        try {
+          // Attempt 2: Default Front Camera (fallback)
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' },
+            audio: false
+          });
+        } catch (err2) {
+          console.error("Camera Error:", err2);
+          if (isMounted) setError("Camera access denied or not available.");
+          return;
+        }
+      }
+
+      if (!isMounted) {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
       }
     };
 
     startCamera();
 
     return () => {
+      isMounted = false;
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
