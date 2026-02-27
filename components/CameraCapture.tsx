@@ -46,9 +46,9 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
         const ctx = canvas.getContext('2d');
         
         if (ctx) {
-          // Mirror horizontally
-          ctx.translate(canvas.width, 0);
-          ctx.scale(-1, 1);
+          // Mirror horizontally - REMOVED for back camera
+          // ctx.translate(canvas.width, 0);
+          // ctx.scale(-1, 1);
           
           // Draw cropped portion
           ctx.drawImage(
@@ -70,11 +70,11 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
 
     const startCamera = async () => {
       try {
-        // Attempt 1: High Resolution Front Camera
+        // Attempt 1: High Resolution Back Camera
         // We use min constraints to encourage higher quality, but fallback if needed
         stream = await navigator.mediaDevices.getUserMedia({
           video: { 
-            facingMode: 'user', 
+            facingMode: 'environment', 
             width: { min: 1280, ideal: 3840 }, 
             height: { min: 720, ideal: 2160 } 
           },
@@ -83,9 +83,9 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
       } catch (err) {
         console.warn("High-res camera failed, retrying with default constraints...", err);
         try {
-          // Attempt 2: Default Front Camera (fallback)
+          // Attempt 2: Default Back Camera (fallback)
           stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' },
+            video: { facingMode: 'environment' },
             audio: false
           });
         } catch (err2) {
@@ -125,7 +125,7 @@ const CameraCapture = forwardRef<CameraHandle, Props>(({ className }, ref) => {
         ref={videoRef}
         autoPlay
         playsInline
-        className="w-full h-full object-cover transform -scale-x-100" // Mirrors the feed
+        className="w-full h-full object-cover" // Removed transform -scale-x-100 for back camera
       />
     </div>
   );
